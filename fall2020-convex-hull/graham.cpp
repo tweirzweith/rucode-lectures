@@ -12,6 +12,10 @@ struct point2d {
 struct vector2d {
     long long x, y;
 
+    long long len() {
+        return x * x + y * y;
+    }
+
     vector2d(point2d a, point2d b) {
         x = b.x - a.x;
         y = b.y - a.y;
@@ -37,7 +41,9 @@ vector<point2d> get_convex_hull(vector<point2d> points) {
             points.begin() + 1,
             points.end(),
             [&points](point2d a, point2d b) {
-                return cross(vector2d(points[0], a), vector2d(points[0], b)) > 0;
+                auto v1 = vector2d(points[0], a);
+                auto v2 = vector2d(points[0], b);
+                return cross(v1, v2) > 0 || (cross(v1, v2) == 0 && v1.len() < v2.len());
             }
     );
 
@@ -50,7 +56,7 @@ vector<point2d> get_convex_hull(vector<point2d> points) {
                && cross(
                 vector2d(ch[ch.size() - 2], ch[ch.size() - 1]),
                 vector2d(ch[ch.size() - 1], points[i])
-        ) < 0)
+        ) <= 0)
         {
             ch.pop_back();
         }
@@ -80,4 +86,3 @@ int main() {
 
     return 0;
 }
-
